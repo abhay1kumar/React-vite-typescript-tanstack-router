@@ -13,6 +13,8 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as GeneratePdfIndexImport } from './routes/generate-pdf/index'
+import { Route as ExamplesIndexImport } from './routes/examples/index'
 
 // Create Virtual Routes
 
@@ -39,6 +41,16 @@ const ServicesIndexLazyRoute = ServicesIndexLazyImport.update({
   import('./routes/services/index.lazy').then((d) => d.Route),
 )
 
+const GeneratePdfIndexRoute = GeneratePdfIndexImport.update({
+  path: '/generate-pdf/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ExamplesIndexRoute = ExamplesIndexImport.update({
+  path: '/examples/',
+  getParentRoute: () => rootRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -57,6 +69,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutLazyImport
       parentRoute: typeof rootRoute
     }
+    '/examples/': {
+      id: '/examples/'
+      path: '/examples'
+      fullPath: '/examples'
+      preLoaderRoute: typeof ExamplesIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/generate-pdf/': {
+      id: '/generate-pdf/'
+      path: '/generate-pdf'
+      fullPath: '/generate-pdf'
+      preLoaderRoute: typeof GeneratePdfIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/services/': {
       id: '/services/'
       path: '/services'
@@ -72,6 +98,8 @@ declare module '@tanstack/react-router' {
 export const routeTree = rootRoute.addChildren({
   IndexLazyRoute,
   AboutLazyRoute,
+  ExamplesIndexRoute,
+  GeneratePdfIndexRoute,
   ServicesIndexLazyRoute,
 })
 
@@ -85,6 +113,8 @@ export const routeTree = rootRoute.addChildren({
       "children": [
         "/",
         "/about",
+        "/examples/",
+        "/generate-pdf/",
         "/services/"
       ]
     },
@@ -93,6 +123,12 @@ export const routeTree = rootRoute.addChildren({
     },
     "/about": {
       "filePath": "about.lazy.tsx"
+    },
+    "/examples/": {
+      "filePath": "examples/index.tsx"
+    },
+    "/generate-pdf/": {
+      "filePath": "generate-pdf/index.tsx"
     },
     "/services/": {
       "filePath": "services/index.lazy.tsx"
