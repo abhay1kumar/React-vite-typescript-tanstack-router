@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import ReactDOM from "react-dom/client";
 import { routeTree } from "./routeTree.gen";
-
+import { ClerkProvider } from "@clerk/clerk-react";
 const queryClient = new QueryClient();
 
 // Set up a Router instance
@@ -36,9 +36,13 @@ function InnerApp() {
 }
 
 function App() {
+  const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+
   return (
     <>
-      <InnerApp />
+      <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
+        <InnerApp />
+      </ClerkProvider>
     </>
   );
 }

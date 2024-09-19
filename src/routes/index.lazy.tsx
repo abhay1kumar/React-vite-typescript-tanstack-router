@@ -1,3 +1,9 @@
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  UserButton,
+} from "@clerk/clerk-react";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import axios from "axios";
 import { useState } from "react";
@@ -33,6 +39,27 @@ const HomeIndex = () => {
         <pre>{csvData}</pre>
       </div>
       <h3>Welcome Home!</h3>
+
+      {/* <SignIn.Strategy name="password">
+        <h1>Enter your password</h1>
+
+        <Clerk.Field name="password">
+          <Clerk.Label>Password</Clerk.Label>
+          <Clerk.Input />
+          <Clerk.FieldError />
+        </Clerk.Field>
+
+        <SignIn.Action submit>Continue</SignIn.Action>
+        <SignIn.Action navigate="forgot-password">
+          Forgot password?
+        </SignIn.Action>
+      </SignIn.Strategy> */}
+      <SignedOut>
+        <SignInButton />
+      </SignedOut>
+      <SignedIn>
+        <UserButton />
+      </SignedIn>
     </div>
   );
 };
