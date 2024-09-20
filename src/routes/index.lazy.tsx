@@ -28,7 +28,7 @@ const HomeIndex = () => {
       pdfData,
     });
 
-    console.log("response", response);
+    // console.log("response", response);
     setCsvData(response.data);
   };
 
