@@ -1,11 +1,13 @@
-import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  UserButton,
-} from "@clerk/clerk-react";
+// import {
+//   SignedIn,
+//   SignedOut,
+//   // SignIn,
+//   SignInButton,
+//   UserButton,
+// } from "@clerk/clerk-react";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import axios from "axios";
+import WebcamDemo from "../components/FaceRecogantioni/WebcamDemo";
 import { useState } from "react";
 
 export const Route = createLazyFileRoute("/")({
@@ -39,6 +41,7 @@ const HomeIndex = () => {
         <pre>{csvData}</pre>
       </div>
       <h3>Welcome Home!</h3>
+      <WebcamDemo />
 
       {/* <SignIn.Strategy name="password">
         <h1>Enter your password</h1>
@@ -54,12 +57,13 @@ const HomeIndex = () => {
           Forgot password?
         </SignIn.Action>
       </SignIn.Strategy> */}
-      <SignedOut>
+      {/* <SignIn /> */}
+      {/* <SignedOut>
         <SignInButton />
       </SignedOut>
       <SignedIn>
         <UserButton />
-      </SignedIn>
+      </SignedIn> */}
     </div>
   );
 };
