@@ -1,14 +1,7 @@
-// import {
-//   SignedIn,
-//   SignedOut,
-//   // SignIn,
-//   SignInButton,
-//   UserButton,
-// } from "@clerk/clerk-react";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import axios from "axios";
-import WebcamDemo from "../components/FaceRecogantioni/WebcamDemo";
 import { useState } from "react";
+import Clendly from "../components/FaceRecogantioni/Clendly";
 
 export const Route = createLazyFileRoute("/")({
   component: () => {
@@ -40,30 +33,11 @@ const HomeIndex = () => {
         <input type="file" accept=".pdf" onChange={handleFileUpload} />
         <pre>{csvData}</pre>
       </div>
+      {/* <ClerkComponent/> */}
       <h3>Welcome Home!</h3>
-      <WebcamDemo />
+      {/* <WebcamDemo /> */}
 
-      {/* <SignIn.Strategy name="password">
-        <h1>Enter your password</h1>
-
-        <Clerk.Field name="password">
-          <Clerk.Label>Password</Clerk.Label>
-          <Clerk.Input />
-          <Clerk.FieldError />
-        </Clerk.Field>
-
-        <SignIn.Action submit>Continue</SignIn.Action>
-        <SignIn.Action navigate="forgot-password">
-          Forgot password?
-        </SignIn.Action>
-      </SignIn.Strategy> */}
-      {/* <SignIn /> */}
-      {/* <SignedOut>
-        <SignInButton />
-      </SignedOut>
-      <SignedIn>
-        <UserButton />
-      </SignedIn> */}
+      <Clendly />
     </div>
   );
 };

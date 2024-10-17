@@ -99,7 +99,7 @@ const WebcamFaceAuth = (): JSX.Element => {
     console.log(
       `Matched Points: ${matchedPoints}, Total Points: ${storedData.length}, Match Percentage: ${matchPercentage}`
     );
-    debugger;
+    // debugger;
     return matchPercentage;
   };
 
@@ -182,7 +182,7 @@ const WebcamFaceAuth = (): JSX.Element => {
   // // Detect face at regular intervals
   useEffect(() => {
     const interval = setInterval(() => {
-      detectFace(true);
+      detectFace(false);
     }, 1000);
     return () => clearInterval(interval);
   }, [detectFace]);
