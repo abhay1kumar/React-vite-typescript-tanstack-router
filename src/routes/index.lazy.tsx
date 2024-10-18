@@ -1,7 +1,9 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
 import axios from "axios";
 import { useState } from "react";
-import Clendly from "../components/FaceRecogantioni/Clendly";
+// import Clendly from "../components/FaceRecogantioni/Clendly";
+// import WebcamFaceAuth from "../components/FaceRecogantioni/WebcamDemo";
+import ImageFaceAuth from "../components/FaceRecogantioni/ImageBaseDedection";
 
 export const Route = createLazyFileRoute("/")({
   component: () => {
@@ -35,9 +37,10 @@ const HomeIndex = () => {
       </div>
       {/* <ClerkComponent/> */}
       <h3>Welcome Home!</h3>
-      {/* <WebcamDemo /> */}
+      {/* <WebcamFaceAuth /> */}
+      <ImageFaceAuth />
 
-      <Clendly />
+      {/* <Clendly /> */}
     </div>
   );
 };

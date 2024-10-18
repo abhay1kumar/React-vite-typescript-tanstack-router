@@ -1,31 +1,30 @@
 import { useRef, useState, useCallback, useEffect } from "react";
 import Webcam from "react-webcam";
 import * as faceLandmarksDetection from "@tensorflow-models/face-landmarks-detection";
-import "@tensorflow/tfjs-backend-webgl"; // Ensure this is loaded for the WebGL backend
+import "@tensorflow/tfjs-backend-webgl";
 import { Render } from "../../components/Render.component";
 import jsonData from "./abhayFace.json";
 
 interface FacePoint {
   x: number;
   y: number;
-  name?: string; // Not all points have a name
+  z?: number;
+  name?: string; // Some points may not have names
 }
 
 const width = 640;
 const height = 480;
-const threshold = 5; // Error margin for comparison
+const tolerance = 15; // Error margin for comparison
 
 const WebcamFaceAuth = (): JSX.Element => {
   const webcamRef = useRef<Webcam>(null);
   const [status, setStatus] = useState<string>("Loading...");
   const [authenticated, setAuthenticated] = useState<boolean>(false);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
-  // const [matchPercentage, setMatchPercentage] = useState<number>(0);
 
   // Store keypoints into localStorage
   const createAndDownloadJsonFile = (data: object, fileName: string) => {
     const jsonStr = JSON.stringify(data, null, 2);
-
     const blob = new Blob([jsonStr], { type: "application/json" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
@@ -35,61 +34,40 @@ const WebcamFaceAuth = (): JSX.Element => {
     document.body.removeChild(link);
   };
 
-  // Detect face and process keypoints
-
-  // Compare stored and current keypoints
-  const compareFaceData = (
-    stored: { x: number; y: number }[],
-    current: { x: number; y: number }[]
-  ): boolean => {
-    if (stored.length !== current.length) return false;
-
-    for (let i = 0; i < stored.length; i++) {
-      const { x: x1, y: y1 } = stored[i];
-      const { x: x2, y: y2 } = current[i];
-      const distance = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
-      if (distance > threshold) {
-        return false;
-      }
-    }
-    return true;
+  // Calculate the distance between two points in 3D space (x, y, z)
+  const calculateDistance = (p1: FacePoint, p2: FacePoint): number => {
+    const dx = p1.x - p2.x;
+    const dy = p1.y - p2.y;
+    const dz = (p1.z || 0) - (p2.z || 0); // Handle z as optional
+    return Math.sqrt(dx * dx + dy * dy + dz * dz);
   };
-  const calculateDistance = (
-    p1: { x: number; y: number },
-    p2: { x: number; y: number }
-  ): number => {
-    return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
-  };
-  // Function to find a matching point in the detected data
+
+  // Check if two points match within the given tolerance
   const isPointMatching = (
     storedPoint: FacePoint,
-    detectedPoint: FacePoint,
-    tolerance: number
+    detectedPoint: FacePoint
   ): boolean => {
+    // Match by name and by distance within tolerance
+    if (storedPoint.name !== detectedPoint.name) return false;
     const distance = calculateDistance(storedPoint, detectedPoint);
-
-    return distance < tolerance;
+    return distance <= tolerance;
   };
 
-  // Function to calculate the match percentage between stored and detected face data
+  // Calculate the match percentage between stored and detected face data
   const calculateMatchPercentage = (
     storedData: FacePoint[],
-    detectedData: FacePoint[],
-    tolerance: number
+    detectedData: FacePoint[]
   ): number => {
     let matchedPoints = 0;
 
     // Loop through each point in the stored data
     for (const storedPoint of storedData) {
       const detectedPoint = detectedData.find(
-        (d) => d.name === storedPoint.name
+        (d) => d.name === storedPoint.name // Match by name
       );
 
       // If a corresponding point is found in the detected data, compare their coordinates
-      if (
-        detectedPoint &&
-        isPointMatching(storedPoint, detectedPoint, tolerance)
-      ) {
+      if (detectedPoint && isPointMatching(storedPoint, detectedPoint)) {
         matchedPoints++; // Count as a match if within tolerance
       }
     }
@@ -99,24 +77,16 @@ const WebcamFaceAuth = (): JSX.Element => {
     console.log(
       `Matched Points: ${matchedPoints}, Total Points: ${storedData.length}, Match Percentage: ${matchPercentage}`
     );
-    // debugger;
     return matchPercentage;
   };
 
-  // Main function to scan and keep comparing until 90% match is reached
+  // Scan and compare face data until 90% match is reached
   const scanFaceUntilMatch = (
     storedData: FacePoint[],
     detectedData: FacePoint[],
-    tolerance: number,
-    targetMatchPercentage: number
+    targetMatchPercentage: number = 90
   ): { matchedPercentage: number; isMatched: boolean } => {
-    const matchPercentage = calculateMatchPercentage(
-      storedData,
-      detectedData,
-      tolerance
-    );
-
-    // Check if the match percentage has reached or exceeded the target
+    const matchPercentage = calculateMatchPercentage(storedData, detectedData);
     const isMatched = matchPercentage >= targetMatchPercentage;
 
     return {
@@ -125,6 +95,7 @@ const WebcamFaceAuth = (): JSX.Element => {
     };
   };
 
+  // Detect face and process keypoints
   const detectFace = useCallback(async (match = false) => {
     if (webcamRef.current && webcamRef.current.video?.readyState === 4) {
       const video = webcamRef.current.video;
@@ -133,56 +104,54 @@ const WebcamFaceAuth = (): JSX.Element => {
       const model = faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh;
       const detectorConfig: faceLandmarksDetection.MediaPipeFaceMeshMediaPipeModelConfig =
         {
-          runtime: "mediapipe", // Strictly type as "mediapipe"
+          runtime: "mediapipe",
           solutionPath: "https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh",
-          refineLandmarks: true, // Optional: Improve landmark accuracy
+          refineLandmarks: true, // Improve landmark accuracy
         };
       const detector = await faceLandmarksDetection.createDetector(
         model,
         detectorConfig
       );
-      // Get face predictions
       const estimationConfig = { flipHorizontal: false };
       const predictions = await detector.estimateFaces(video, estimationConfig);
 
-      console.log("predictions", predictions);
       if (predictions.length > 0) {
         const keypoints = predictions[0].keypoints.map(
-          (point: { x: number; y: number; name?: string }) => ({
+          (point: { x: number; y: number; z?: number; name?: string }) => ({
             x: point.x,
             y: point.y,
-            name: point.name,
+            z: point.z,
+            name: point?.name || "",
           })
         );
+
         if (!match) {
           createAndDownloadJsonFile(keypoints, "face_landmarks9");
           setStatus("Face data stored. Come back to authenticate!");
           setIsCameraOpen(false);
         } else {
-          // const storedKeypoints = [{ x: 12, y: 10 }];
-          const isMatch = compareFaceData(jsonData, keypoints);
-          const matching = scanFaceUntilMatch(jsonData, keypoints, 15, 90);
-          console.log("firmatchingst", matching);
-          console.log("firmatchingst__isMatch", isMatch);
+          // Compare with the stored face data (jsonData)
+          const matching = scanFaceUntilMatch(jsonData, keypoints, 90);
           if (matching.isMatched) {
             setAuthenticated(true);
             setStatus("Face recognized! Access granted.");
             setIsCameraOpen(false);
           } else {
-            setStatus("Face not recognized. Access denied.");
-            // setIsCameraOpen(false);
+            setStatus(
+              `Face not recognized. Match Percentage: ${matching.matchedPercentage.toFixed(2)}%`
+            );
           }
         }
       } else {
         setStatus("No face detected.");
-        setIsCameraOpen(false);
       }
     }
   }, []);
-  // // Detect face at regular intervals
+
+  // Continuously detect face every second
   useEffect(() => {
     const interval = setInterval(() => {
-      detectFace(false);
+      detectFace(true);
     }, 1000);
     return () => clearInterval(interval);
   }, [detectFace]);
@@ -191,12 +160,12 @@ const WebcamFaceAuth = (): JSX.Element => {
     setIsCameraOpen(true);
     detectFace(true);
   };
+
   const createFace = () => {
     setIsCameraOpen(true);
     detectFace(false);
   };
 
-  console.log("jsondata", jsonData);
   return (
     <div>
       <button onClick={createFace}>Save Face</button>
@@ -205,22 +174,14 @@ const WebcamFaceAuth = (): JSX.Element => {
       {authenticated ? (
         <p>Welcome back! You are authenticated.</p>
       ) : (
-        <p> You are not authenticated.</p>
+        <p>You are not authenticated.</p>
       )}
       <Render if={isCameraOpen}>
         <div style={{ position: "relative", width, height }}>
           <Webcam
             ref={webcamRef}
-            style={{
-              width,
-              height,
-              position: "absolute",
-            }}
-            videoConstraints={{
-              width,
-              height,
-              facingMode: "user",
-            }}
+            style={{ width, height, position: "absolute" }}
+            videoConstraints={{ width, height, facingMode: "user" }}
           />
         </div>
       </Render>
