@@ -1,9 +1,11 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
 import axios from "axios";
+import ClerkComponent from "../components/clerk/ClerkComponent";
 import { useState } from "react";
+// import SpinWheel from "../components/SpinWheel";
 // import Clendly from "../components/FaceRecogantioni/Clendly";
 // import WebcamFaceAuth from "../components/FaceRecogantioni/WebcamDemo";
-import ImageFaceAuth from "../components/FaceRecogantioni/ImageBaseDedection";
+// import ImageFaceAuth from "../components/FaceRecogantioni/ImageBaseDedection";
 
 export const Route = createLazyFileRoute("/")({
   component: () => {
@@ -35,10 +37,11 @@ const HomeIndex = () => {
         <input type="file" accept=".pdf" onChange={handleFileUpload} />
         <pre>{csvData}</pre>
       </div>
-      {/* <ClerkComponent/> */}
+      <ClerkComponent />
+      {/* <SpinWheel/> */}
       <h3>Welcome Home!</h3>
       {/* <WebcamFaceAuth /> */}
-      <ImageFaceAuth />
+      {/* <ImageFaceAuth /> */}
 
       {/* <Clendly /> */}
     </div>

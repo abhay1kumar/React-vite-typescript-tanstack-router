@@ -1,17 +1,25 @@
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
-
+import {
+  OrganizationList,
+  SignedIn,
+  SignedOut,
+  SignIn,
+  UserProfile,
+} from "@clerk/clerk-react";
 
 const ClerkComponent = () => {
+
   return (
     <div>
       <SignedOut>
-        <SignInButton />
+        <SignIn />
+        {/* <OrganizationList /> */}
       </SignedOut>
       <SignedIn>
-        <UserButton />
+        <UserProfile />
+        <OrganizationList afterCreateOrganizationUrl={'/'} />
       </SignedIn>
     </div>
   );
-}
+};
 
-export default ClerkComponent
+export default ClerkComponent;
