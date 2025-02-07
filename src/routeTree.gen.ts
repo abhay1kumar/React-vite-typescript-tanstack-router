@@ -13,6 +13,7 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as PockerImport } from './routes/pocker'
 import { Route as GeneratePdfIndexImport } from './routes/generate-pdf/index'
 import { Route as ExamplesIndexImport } from './routes/examples/index'
 
@@ -28,6 +29,11 @@ const AboutLazyRoute = AboutLazyImport.update({
   path: '/about',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/about.lazy').then((d) => d.Route))
+
+const PockerRoute = PockerImport.update({
+  path: '/pocker',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const IndexLazyRoute = IndexLazyImport.update({
   path: '/',
@@ -60,6 +66,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/pocker': {
+      id: '/pocker'
+      path: '/pocker'
+      fullPath: '/pocker'
+      preLoaderRoute: typeof PockerImport
       parentRoute: typeof rootRoute
     }
     '/about': {
@@ -97,6 +110,7 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren({
   IndexLazyRoute,
+  PockerRoute,
   AboutLazyRoute,
   ExamplesIndexRoute,
   GeneratePdfIndexRoute,
@@ -112,6 +126,7 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/pocker",
         "/about",
         "/examples/",
         "/generate-pdf/",
@@ -120,6 +135,9 @@ export const routeTree = rootRoute.addChildren({
     },
     "/": {
       "filePath": "index.lazy.tsx"
+    },
+    "/pocker": {
+      "filePath": "pocker.tsx"
     },
     "/about": {
       "filePath": "about.lazy.tsx"

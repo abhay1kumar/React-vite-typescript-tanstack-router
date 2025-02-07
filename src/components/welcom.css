@@ -1,0 +1,215 @@
+.background-welcome {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 80%;
+    margin: 10px auto;
+    flex-direction: column;
+    text-align: center;
+    position: relative;
+}
+
+.welcome-image {
+    max-width: 50%;
+    height: auto;
+    position: relative;
+    z-index: 1;
+}
+
+.welcome-image img {
+    width: 100%;
+}
+
+.box-container {
+    position: absolute; /* Position absolutely within welcome-image */
+    top: 60%; /* Center vertically */
+    left: 52%; /* Center horizontally */
+    transform: translate(-50%, -50%); /* Offset to truly center */
+    text-align: center;
+    perspective: 1000px;
+    width: 100%; /* Ensure it takes full width of parent */
+}
+
+.number-card {
+    display: grid;
+    grid-template-columns: repeat(5, 65px); /* Reduced the card size */
+    grid-template-rows: repeat(4, 65px);
+    justify-content: center; /* Center the grid */
+    position: relative;
+    z-index: 2;
+}
+
+.image-card {
+    padding-top: 20px;
+    display: flex;
+    width: 70px;
+    height: 70px;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    position: relative;
+}
+
+.bluebox-img {
+    width: 100%;
+}
+
+.image-card.active {
+    z-index: 100;
+    background-color: #f1c40f;
+}
+.active-img {
+    position: absolute; /* Maintain the aspect ratio */
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+/* .image-card.active .active-img {
+    transform: scale(1.05); 
+} */
+.image-card.winner {
+    transform: scale(1.1);
+    background-color: #f1c40f;
+    animation: pop 0.5s ease;
+}
+
+.overlay {
+    position: absolute;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    border-radius: 8px;
+}
+
+.big-number {
+  grid-column: 2 / span 3; /* Span across 3 columns */
+  grid-row: 2 / span 3;    /* Span across 3 rows */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 4rem;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  z-index: 2;
+  background: url('../../../../public/images/bigBlue-box.png') no-repeat center center;
+  background-size: cover;
+  border: none;
+}
+
+.big-number:hover {
+    background-color: #2980b9;
+}
+.active-img{
+    width: 92px;
+    margin-bottom: 4px;
+    height: 90px;
+}
+.start-button {
+    width: 100%;
+    background: none;
+    border: none;
+    cursor: pointer;
+    position: absolute; /* Position the button absolutely */
+    bottom: -60px; /* Adjust this value to position the button below the number-card */
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.start-button img {
+    width: 22%; /* Adjust size as needed */
+    height: auto;
+}
+.start-text {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    font-size: 16px;
+    color: white;
+    font-weight: bold;
+    pointer-events: none;  /* Ensures the text doesn't interfere with the button click */
+  }
+@keyframes pop {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1.1);
+    }
+}
+
+/* Responsive adjustments */
+
+/* For tablets (max width 1024px) */
+@media (max-width: 1024px) {
+    .number-card {
+        grid-template-columns: repeat(5, 50px);
+        grid-template-rows: repeat(4, 50px);
+    }
+
+    .image-card {
+        width: 45px;
+        height: 45px;
+        font-size: 20px;
+    }
+
+    .start-button {
+        font-size: 3rem;
+    }
+}
+
+/* For smartphones (max width 768px) */
+@media (max-width: 768px) {
+    .number-card {
+        grid-template-columns: repeat(5, 50px);
+        grid-template-rows: repeat(4, 50px);
+    }
+
+    .image-card {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+
+    .start-button {
+        font-size: 2.5rem;
+    }
+
+    .welcome-image {
+        max-width: 70%;
+    }
+}
+
+/* For small smartphones (max width 480px) */
+/* @media (max-width: 480px) {
+    .number-card {
+        grid-template-columns: repeat(5, 35px);
+        grid-template-rows: repeat(4, 35px);
+    }
+
+    .image-card {
+        width: 30px;
+        height: 30px;
+        font-size: 10px;
+    }
+
+    .start-button {
+        font-size: 2rem;
+    }
+
+    .welcome-image {
+        max-width: "90%";
+    }
+} */
